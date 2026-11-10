@@ -49,7 +49,8 @@ jobs:
           echo "TOUCHSTONE_API_TOKEN=$token" >> "$GITHUB_ENV"
 
       # The same steps as the TouchStone Action: a Check against grader request runs the
-      # proposed tests as a trial, which never sets the verdict; then the summary uploads.
+      # proposed tests as a trial, which never sets the verdict; then the result uploads, with
+      # full evidence while the org allows it (CLI 0.1.10 sends it only with --include-evidence).
       - name: touchstone check
         run: |
           result="$RUNNER_TEMP/touchstone-result.json"
@@ -64,6 +65,10 @@ jobs:
           code=$?
           set -e
           run_id=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["id"])' "$result")
+          privacy=$(curl -sSf -H "Authorization: Bearer $TOUCHSTONE_API_TOKEN" "$URL/api/v1/safety/settings" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["privacy"])')
+          evidence=()
+          [ "$privacy" = full ] && evidence=(--include-evidence)
           touchstone sync "$SUITE" "$run_id" --evidence-dir "$DATA_DIR" --url "$URL" \
-            --suite "$CLOUD_SUITE" ${REQUEST_ID:+--request "$REQUEST_ID"} > /dev/null
+            --suite "$CLOUD_SUITE" "${evidence[@]}" ${REQUEST_ID:+--request "$REQUEST_ID"} > /dev/null
           exit "$code"
