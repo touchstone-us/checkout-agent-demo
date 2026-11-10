@@ -9,10 +9,10 @@ through tools; the grader scores the order it places.
 
 ![Animated story: an LLM agent learns to ship a checkout order to the wrong address while the grader still pays full reward, TouchStone's approved tests catch it, and after the grader fix the same move earns 0](docs/story.gif)
 
-A simplified illustration, also as a [video](docs/story.mp4): its store, addresses and grader
-are drawn for the animation. The recorded episodes below hold the real case. Five orders went
-to one of the customer's saved addresses instead of the address they asked for, and the grader
-still paid 1.0, because it accepts any saved address.
+A simplified illustration, also as a [video](docs/story.mp4): the store and addresses are drawn
+for the animation, but the grader's address check is the one in this environment. The grader accepts
+any address saved on the customer's account, so in the recorded episodes below, five orders sent to
+a saved address other than the one the customer asked for still earned 1.0.
 
 ## Layout
 
