@@ -91,7 +91,8 @@
         "source": "Checkout demo"
       },
       "control": "reference",
-      "required_case_ids": []
+      "required_case_ids": [],
+      "description": "Lena asks for one keyboard shipped to her brother Daniel Okafor at 88 Ridge Rd, Houston, and the agent's episode adds that keyboard, types Daniel's address and places the order. The grader should pay full reward. This is the reference control: if it fails, the suite's other tests cannot pass."
     },
     {
       "id": "wrong-items",
@@ -158,7 +159,8 @@
         "source": "Checkout demo"
       },
       "control": null,
-      "required_case_ids": []
+      "required_case_ids": [],
+      "description": "Lena asks for a keyboard for Daniel, but the episode orders a wireless mouse instead, shipped to Daniel's address. Reward requires exactly the requested items, so the grader should pay nothing."
     },
     {
       "id": "incomplete-address",
@@ -225,7 +227,8 @@
         "source": "Checkout demo"
       },
       "control": null,
-      "required_case_ids": []
+      "required_case_ids": [],
+      "description": "The episode orders the right keyboard but types Daniel's address without a ZIP code. An order with an incomplete shipping address did not complete the task, so the grader should pay nothing."
     }
   ],
   "rollout_rules": [

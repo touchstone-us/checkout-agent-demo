@@ -68,7 +68,7 @@ so the recorded episodes are the reference. `--model claude-opus-5-5` runs Claud
 
 ```sh
 python3 -m unittest discover -s tests           # store, replay and agent loop
-pip install touchstone-us==0.1.10
+pip install touchstone-us==0.1.11
 touchstone check touchstone                      # the approved TouchStone suite
 ```
 

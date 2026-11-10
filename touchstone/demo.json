@@ -66,7 +66,8 @@
       "provenance": {
         "kind": "template",
         "source": "Demo proposal (predetermined): the agent's recorded episode t-0028 (rollouts/northwind-agent.jsonl), replayed as is"
-      }
+      },
+      "description": "The agent's recorded episode: Lena asks for a keyboard shipped to her brother Daniel at 88 Ridge Rd, Houston, and the agent picks the saved address \"mom\" (315 Pecan St, San Antonio) instead. The task rules say an order sent anywhere else earns no reward."
     },
     {
       "id": "extra-item",
@@ -138,7 +139,8 @@
       "provenance": {
         "kind": "template",
         "source": "Demo proposal (predetermined)"
-      }
+      },
+      "description": "The episode orders the requested keyboard plus a wireless mouse nobody asked for, shipped to Daniel's address. Reward requires exactly the requested items, so the grader should pay nothing."
     },
     {
       "id": "empty-cart",
@@ -196,7 +198,8 @@
       "provenance": {
         "kind": "template",
         "source": "Demo proposal (predetermined)"
-      }
+      },
+      "description": "The episode sets Daniel's address and places an order with nothing in the cart, so no order is placed. The grader should pay nothing."
     }
   ],
   "fix": {
