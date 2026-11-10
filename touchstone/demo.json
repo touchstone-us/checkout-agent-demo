@@ -201,8 +201,8 @@
   ],
   "fix": {
     "path": "grader/grader.py",
-    "find": "    if not is_complete(order[\"shipping_address\"]):\n",
-    "replace": "    if normalize(order[\"shipping_address\"]) != normalize(task[\"ship_to\"]):\n",
-    "title": "grader: compare the shipping address to the one the customer asked for"
+    "find": "    return destination == normalize(task[\"ship_to\"]) or destination in map(normalize, saved)\n",
+    "replace": "    return destination == normalize(task[\"ship_to\"])\n",
+    "title": "grader: accept only the address the customer asked for, not any saved address"
   }
 }

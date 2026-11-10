@@ -2,9 +2,8 @@
 
     python3 scripts/replay_rollouts.py rollouts/northwind-agent.jsonl
 
-Prints each episode's reward now and whether its order went where the customer asked, then
-exits 1 when any episode is rewarded although it shipped somewhere else: the grader bug.
-After the grader fix the same rollouts exit 0.
+Prints each episode's reward and whether its order went where the customer asked, then exits
+1 when any episode is rewarded although it shipped somewhere else.
 """
 
 import json

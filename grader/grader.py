@@ -6,6 +6,8 @@
 
 import re
 
+from checkout_env.store import CUSTOMERS
+
 REQUIRED = ("name", "line1", "city", "region", "postal_code", "country")
 COUNTRIES = {"usa": "us", "united states": "us"}
 
@@ -27,11 +29,25 @@ def is_complete(address):
     return all(str(address.get(field, "")).strip() for field in REQUIRED)
 
 
+def _line_items(items):
+    return sorted((line["sku"], line["quantity"]) for line in items)
+
+
+def ships_to_customer(address, task):
+    """The order goes where the customer wants it: the address in their request, or one saved
+    on their account, since requests often name a saved address loosely ("my office")."""
+    if not is_complete(address):
+        return False
+    saved = CUSTOMERS[task["customer_id"]]["addresses"].values()
+    destination = normalize(address)
+    return destination == normalize(task["ship_to"]) or destination in map(normalize, saved)
+
+
 def reward(order, task):
     if order is None:
         return 0.0
-    if order["items"] != sorted(task["items"], key=lambda line: line["sku"]):
+    if _line_items(order["items"]) != _line_items(task["items"]):
         return 0.0
-    if not is_complete(order["shipping_address"]):
+    if not ships_to_customer(order["shipping_address"], task):
         return 0.0
     return 1.0
