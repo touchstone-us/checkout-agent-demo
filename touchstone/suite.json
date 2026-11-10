@@ -227,5 +227,14 @@
       "control": null,
       "required_case_ids": []
     }
+  ],
+  "rollout_rules": [
+    {
+      "id": "ship-to-user-address",
+      "requirement_id": "ship-to-user",
+      "path": "shipped_where_asked",
+      "operator": "eq",
+      "expected": true
+    }
   ]
 }
