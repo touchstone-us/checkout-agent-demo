@@ -1,0 +1,66 @@
+name: TouchStone
+
+# Runs this repo's TouchStone suite when the dashboard asks (Run approved tests or Check against
+# grader). It proves which branch it runs on to TouchStone with a
+# GitHub Actions OIDC token, so no secret is stored: TouchStone files the result under the demo
+# organization that owns the branch.
+on:
+  workflow_dispatch:
+    inputs:
+      touchstone-request:
+        description: Set by the TouchStone dashboard; leave empty by hand.
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: touchstone-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: TouchStone
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      TOUCHSTONE_TELEMETRY: "off"
+      URL: https://dashboard.touchstone-us.com
+      SUITE: touchstone
+      CLOUD_SUITE: checkout-agent
+      DATA_DIR: ${{ runner.temp }}/touchstone-state
+      REQUEST_ID: ${{ inputs.touchstone-request }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the TouchStone CLI
+        run: python3 -m pip install --quiet touchstone-us==0.1.10
+
+      - name: Prove this branch to TouchStone
+        run: |
+          token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=touchstone" | python3 -c 'import json,sys; print(json.load(sys.stdin)["value"])')
+          echo "::add-mask::$token"
+          echo "TOUCHSTONE_API_TOKEN=$token" >> "$GITHUB_ENV"
+
+      # The same steps as the TouchStone Action: a Check against grader request runs the
+      # proposed tests as a trial, which never sets the verdict; then the summary uploads.
+      - name: touchstone check
+        run: |
+          result="$RUNNER_TEMP/touchstone-result.json"
+          trial=()
+          if [ -n "$REQUEST_ID" ]; then
+            kind=$(touchstone stage-request "$SUITE" "$REQUEST_ID" --evidence-dir "$DATA_DIR" --url "$URL")
+            [ "$kind" = candidates ] && trial=(--experimental)
+          fi
+          set +e
+          env -u TOUCHSTONE_API_TOKEN touchstone check "$SUITE" --evidence-dir "$DATA_DIR" "${trial[@]}" > "$result"
+          code=$?
+          set -e
+          run_id=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["id"])' "$result")
+          touchstone sync "$SUITE" "$run_id" --evidence-dir "$DATA_DIR" --url "$URL" \
+            --suite "$CLOUD_SUITE" ${REQUEST_ID:+--request "$REQUEST_ID"} > /dev/null
+          exit "$code"

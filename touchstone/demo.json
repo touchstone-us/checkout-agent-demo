@@ -1,0 +1,100 @@
+{
+  "note": "TouchStone demo only: Propose tests in a demo organization returns these predetermined proposals instead of calling an LLM, and the demo's fix button applies this one-line grader change.",
+  "proposals": [
+    {
+      "id": "wrong-address",
+      "title": "Wrong address scores 0",
+      "requirement_id": "ship-to-user",
+      "input": {
+        "order": {
+          "items": [
+            "usb-c cable"
+          ],
+          "address": "99 Elm St, Shelbyville"
+        },
+        "task": {
+          "items": [
+            "usb-c cable"
+          ],
+          "address": "12 Oak St, Springfield"
+        }
+      },
+      "assertions": [
+        {
+          "path": "reward",
+          "operator": "eq",
+          "expected": 0
+        }
+      ],
+      "provenance": {
+        "kind": "template",
+        "source": "Demo proposal (predetermined)"
+      }
+    },
+    {
+      "id": "extra-item",
+      "title": "An extra item scores 0",
+      "requirement_id": "right-items",
+      "input": {
+        "order": {
+          "items": [
+            "usb-c cable",
+            "hdmi cable"
+          ],
+          "address": "12 Oak St, Springfield"
+        },
+        "task": {
+          "items": [
+            "usb-c cable"
+          ],
+          "address": "12 Oak St, Springfield"
+        }
+      },
+      "assertions": [
+        {
+          "path": "reward",
+          "operator": "eq",
+          "expected": 0
+        }
+      ],
+      "provenance": {
+        "kind": "template",
+        "source": "Demo proposal (predetermined)"
+      }
+    },
+    {
+      "id": "empty-cart",
+      "title": "An empty cart scores 0",
+      "requirement_id": "right-items",
+      "input": {
+        "order": {
+          "items": [],
+          "address": "12 Oak St, Springfield"
+        },
+        "task": {
+          "items": [
+            "usb-c cable"
+          ],
+          "address": "12 Oak St, Springfield"
+        }
+      },
+      "assertions": [
+        {
+          "path": "reward",
+          "operator": "eq",
+          "expected": 0
+        }
+      ],
+      "provenance": {
+        "kind": "template",
+        "source": "Demo proposal (predetermined)"
+      }
+    }
+  ],
+  "fix": {
+    "path": "grader/grader.py",
+    "find": "    if not order.address:\n",
+    "replace": "    if order.address != task.address:\n",
+    "title": "grader: compare the address to the one the user gave"
+  }
+}
