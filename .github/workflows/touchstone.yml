@@ -29,7 +29,6 @@ jobs:
       URL: https://dashboard.touchstone-us.com
       SUITE: touchstone
       CLOUD_SUITE: checkout-agent
-      DATA_DIR: ${{ runner.temp }}/touchstone-state
       REQUEST_ID: ${{ inputs.touchstone-request }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -37,7 +36,10 @@ jobs:
           persist-credentials: false
 
       - name: Install the TouchStone CLI
-        run: python3 -m pip install --quiet touchstone-us==0.1.10
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet touchstone-us==0.1.10
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
 
       - name: Prove this branch to TouchStone
         run: |
@@ -51,6 +53,7 @@ jobs:
       - name: touchstone check
         run: |
           result="$RUNNER_TEMP/touchstone-result.json"
+          DATA_DIR="$RUNNER_TEMP/touchstone-state"  # the runner context is not allowed in job env
           trial=()
           if [ -n "$REQUEST_ID" ]; then
             kind=$(touchstone stage-request "$SUITE" "$REQUEST_ID" --evidence-dir "$DATA_DIR" --url "$URL")
