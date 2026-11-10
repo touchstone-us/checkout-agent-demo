@@ -3,21 +3,58 @@
   "proposals": [
     {
       "id": "wrong-address",
-      "title": "Wrong address scores 0",
+      "title": "The keyboard shipped to Mom instead of Daniel scores 0",
       "requirement_id": "ship-to-user",
       "input": {
-        "order": {
-          "items": [
-            "usb-c cable"
-          ],
-          "address": "99 Elm St, Shelbyville"
-        },
         "task": {
+          "task_id": "t-0028",
+          "customer_id": "cus_3307",
+          "request": "Send a keyboard to my brother Daniel Okafor, 88 Ridge Rd, Houston TX 77002.",
           "items": [
-            "usb-c cable"
+            {
+              "sku": "KB-MECH-87",
+              "quantity": 1
+            }
           ],
-          "address": "12 Oak St, Springfield"
-        }
+          "ship_to": {
+            "name": "Daniel Okafor",
+            "line1": "88 Ridge Rd",
+            "line2": "",
+            "city": "Houston",
+            "region": "TX",
+            "postal_code": "77002",
+            "country": "US"
+          }
+        },
+        "actions": [
+          {
+            "tool": "search_catalog",
+            "input": {
+              "query": "keyboard"
+            }
+          },
+          {
+            "tool": "add_to_cart",
+            "input": {
+              "sku": "KB-MECH-87",
+              "quantity": 1
+            }
+          },
+          {
+            "tool": "list_saved_addresses",
+            "input": {}
+          },
+          {
+            "tool": "set_shipping_address",
+            "input": {
+              "saved": "mom"
+            }
+          },
+          {
+            "tool": "place_order",
+            "input": {}
+          }
+        ]
       },
       "assertions": [
         {
@@ -28,27 +65,68 @@
       ],
       "provenance": {
         "kind": "template",
-        "source": "Demo proposal (predetermined)"
+        "source": "Demo proposal (predetermined): the agent's recorded episode t-0028 (rollouts/northwind-agent.jsonl), replayed as is"
       }
     },
     {
       "id": "extra-item",
-      "title": "An extra item scores 0",
+      "title": "An extra mouse in the order scores 0",
       "requirement_id": "right-items",
       "input": {
-        "order": {
-          "items": [
-            "usb-c cable",
-            "hdmi cable"
-          ],
-          "address": "12 Oak St, Springfield"
-        },
         "task": {
+          "task_id": "t-0028",
+          "customer_id": "cus_3307",
+          "request": "Send a keyboard to my brother Daniel Okafor, 88 Ridge Rd, Houston TX 77002.",
           "items": [
-            "usb-c cable"
+            {
+              "sku": "KB-MECH-87",
+              "quantity": 1
+            }
           ],
-          "address": "12 Oak St, Springfield"
-        }
+          "ship_to": {
+            "name": "Daniel Okafor",
+            "line1": "88 Ridge Rd",
+            "line2": "",
+            "city": "Houston",
+            "region": "TX",
+            "postal_code": "77002",
+            "country": "US"
+          }
+        },
+        "actions": [
+          {
+            "tool": "add_to_cart",
+            "input": {
+              "sku": "KB-MECH-87",
+              "quantity": 1
+            }
+          },
+          {
+            "tool": "add_to_cart",
+            "input": {
+              "sku": "MS-WL-02",
+              "quantity": 1
+            }
+          },
+          {
+            "tool": "set_shipping_address",
+            "input": {
+              "address": {
+                "name": "Daniel Okafor",
+                "line1": "88 Ridge Rd",
+                "line2": "",
+                "city": "Houston",
+                "region": "TX",
+                "postal_code": "77002",
+                "country": "US"
+              }
+            }
+          },
+          {
+            "tool": "place_order",
+            "input": {}
+          }
+        ]
       },
       "assertions": [
         {
@@ -64,19 +142,49 @@
     },
     {
       "id": "empty-cart",
-      "title": "An empty cart scores 0",
+      "title": "Placing no order scores 0",
       "requirement_id": "right-items",
       "input": {
-        "order": {
-          "items": [],
-          "address": "12 Oak St, Springfield"
-        },
         "task": {
+          "task_id": "t-0028",
+          "customer_id": "cus_3307",
+          "request": "Send a keyboard to my brother Daniel Okafor, 88 Ridge Rd, Houston TX 77002.",
           "items": [
-            "usb-c cable"
+            {
+              "sku": "KB-MECH-87",
+              "quantity": 1
+            }
           ],
-          "address": "12 Oak St, Springfield"
-        }
+          "ship_to": {
+            "name": "Daniel Okafor",
+            "line1": "88 Ridge Rd",
+            "line2": "",
+            "city": "Houston",
+            "region": "TX",
+            "postal_code": "77002",
+            "country": "US"
+          }
+        },
+        "actions": [
+          {
+            "tool": "set_shipping_address",
+            "input": {
+              "address": {
+                "name": "Daniel Okafor",
+                "line1": "88 Ridge Rd",
+                "line2": "",
+                "city": "Houston",
+                "region": "TX",
+                "postal_code": "77002",
+                "country": "US"
+              }
+            }
+          },
+          {
+            "tool": "place_order",
+            "input": {}
+          }
+        ]
       },
       "assertions": [
         {
@@ -93,8 +201,8 @@
   ],
   "fix": {
     "path": "grader/grader.py",
-    "find": "    if not order.address:\n",
-    "replace": "    if order.address != task.address:\n",
-    "title": "grader: compare the address to the one the user gave"
+    "find": "    if not is_complete(order[\"shipping_address\"]):\n",
+    "replace": "    if normalize(order[\"shipping_address\"]) != normalize(task[\"ship_to\"]):\n",
+    "title": "grader: compare the shipping address to the one the customer asked for"
   }
 }

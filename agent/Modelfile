@@ -1,0 +1,8 @@
+# The agent's model: Qwen3 8B with fixed sampling and a 4K context, so reruns repeat the
+# recorded episodes. The agent also turns thinking off (agent/checkout_agent.py).
+#   ollama pull qwen3:8b && ollama create northwind-agent -f agent/Modelfile
+# rollouts/northwind-agent.jsonl was recorded with qwen3:8b ID 500a1f067a9f (`ollama list`).
+FROM qwen3:8b
+PARAMETER temperature 0
+PARAMETER seed 7
+PARAMETER num_ctx 4096
