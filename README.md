@@ -24,6 +24,7 @@ a saved address other than the one the customer asked for still earned 1.0.
 | `agent/checkout_agent.py` | The agent loop and rollout recorder |
 | `agent/Modelfile` | The model: Qwen3 8B with fixed sampling (temperature 0, seed 7) and a 4K context |
 | `rollouts/northwind-agent.jsonl` | Recorded episodes of that model on every task |
+| `training/` | A recorded demo training run (`record.py` writes `rollouts.jsonl`) for the dashboard's rollouts view |
 | `scripts/replay_rollouts.py` | Replays recorded episodes through the store and grader |
 | `grader/grader.py` | The reward: 1.0 when the order completes the customer's task |
 | `touchstone/` | The TouchStone suite: adapter, approved tests, task rules |
@@ -74,3 +75,10 @@ touchstone check touchstone                      # the approved TouchStone suite
 Each TouchStone test is one episode (a customer request plus tool calls) replayed through the
 store and scored by the grader. `touchstone/demo.json` holds the test proposals the TouchStone
 demo dashboard offers.
+
+`training/rollouts.jsonl` is a recorded demo run, not real training: lines marked
+`"source": "recorded"` replay the agent's episodes above, lines marked `"source": "scripted"`
+come from a scripted early policy that fills out the run. Each is replayed through the store
+and scored by the grader. The suite's rollout rule `ship-to-user-address` checks the
+independent `shipped_where_asked`: `touchstone sync-rollouts touchstone --rollouts
+training/rollouts.jsonl --task-path task --accepted-reward 1`.
