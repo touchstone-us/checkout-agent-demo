@@ -4,6 +4,6 @@
 def reward(order, task):
     if order.items != task.items:
         return 0.0
-    if not order.address:
+    if order.address != task.address:
         return 0.0
     return 1.0
