@@ -32,6 +32,6 @@ def reward(order, task):
         return 0.0
     if order["items"] != sorted(task["items"], key=lambda line: line["sku"]):
         return 0.0
-    if not is_complete(order["shipping_address"]):
+    if normalize(order["shipping_address"]) != normalize(task["ship_to"]):
         return 0.0
     return 1.0
