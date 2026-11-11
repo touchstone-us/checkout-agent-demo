@@ -40,7 +40,7 @@ def ships_to_customer(address, task):
         return False
     saved = CUSTOMERS[task["customer_id"]]["addresses"].values()
     destination = normalize(address)
-    return destination == normalize(task["ship_to"]) or destination in map(normalize, saved)
+    return destination == normalize(task["ship_to"])
 
 
 def reward(order, task):
